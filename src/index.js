@@ -184,6 +184,9 @@ HTTPSnippet.prototype.prepare = function (request) {
   // construct a full url
   request.fullUrl = decodeURIComponent(url.format(request.uriObj))
 
+  // Add custom fields needed
+
+
   return request
 }
 
