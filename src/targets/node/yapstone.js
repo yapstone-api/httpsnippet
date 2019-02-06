@@ -29,9 +29,16 @@ module.exports = function (source, options) {
     headers: source.allHeaders
   }
 
-  var customOptions = source.comment.split('---')
+  var lastSwaggerUri = source['_swaggerSettings']
+                          .path.split('/').filter(function(el) {
+                            return !el.includes('{')
+                          }).pop()
 
-  var apiName = camelcase(customOptions[1] + '-api', {pascalCase: true})
+  var swaggerMethod = source['_swaggerSettings'].originalMethod
+  var operationId = swaggerMethod.operationId
+
+  var apiName = camelcase(lastSwaggerUri + '-api', { pascalCase: true })
+  var paramNames = []
 
   code.push("import * as Yapstone from 'yapstone-js';")
 
@@ -39,43 +46,54 @@ module.exports = function (source, options) {
       .push('// Setup')
       .push('const client = Yapstone.ApiClient.instance;')
       .push('const Bearer = client.authentications["Bearer"];')
-      .push('Bearer.apiKey = "YOUR API KEY";')
+      .push('Bearer.apiKey = "YOUR_API_KEY";')
       .blank()
       .push('const api = new Yapstone.%s();', apiName)
-      .push('async function %s() {', customOptions[0])
-      .push(1, 'const applicantId = "test";')
+      .blank()
+      .push('async function %s() {', operationId)
+
+  // Deal with path parameters
+  if(source['_swaggerSettings'].pathParams.length > 0) {
+    paramNames = paramNames.concat(source['_swaggerSettings'].pathParams.map(function(param) {
+      code.push(1, 'const %s = "%s";', param.name, param.value)
+
+      if(param.name != null) {
+        return param.name
+      }
+    }))
+  }
+
+  // Deal with body params
+  if(source.postData.mimeType === 'application/json') {
+    paramNames = paramNames.concat(swaggerMethod.parameters.map(function(param) {
+      if(param.in === 'body') {
+        code.push(1, 'const %s = %s;', param.name, util.inspect(source.postData.jsonObj, {
+          depth: null
+        }))
+        return param.name
+      }
+    }))
+  }
+
+  code.blank()
       .push(1, 'return await api')
-      .push(2, '.%s(applicantId)', customOptions[0])
-      .push(2, '.catch(e => {')
-      .push(2, 'console.error(e);')
+
+  var filteredParamNames = paramNames.filter(function(el) {
+    return el != null;
+  })
+
+  if(filteredParamNames.length > 0) {
+    code.push(2, '.%s(%s)', operationId, filteredParamNames.join(', '))
+  } else {
+    code.push(2, '.%s()', operationId)
+  }
+
+  code.push(2, '.catch(err => {')
+      .push(3, 'console.error(err);')
       .push(2, '});')
       .push('};')
       .blank()
-      .push('console.log(%s());', customOptions[0])
-
-  switch (source.postData.mimeType) {
-    case 'application/x-www-form-urlencoded':
-      if (source.postData.paramsObj) {
-        code.unshift('var qs = require("querystring");')
-        code.push('req.write(qs.stringify(%s));', util.inspect(source.postData.paramsObj, {
-          depth: null
-        }))
-      }
-      break
-
-    case 'application/json':
-      if (source.postData.jsonObj) {
-        code.push('req.write(JSON.stringify(%s));', util.inspect(source.postData.jsonObj, {
-          depth: null
-        }))
-      }
-      break
-
-    default:
-      if (source.postData.text) {
-        code.push('req.write(%s);', JSON.stringify(source.postData.text, null, opts.indent))
-      }
-  }
+      .push('console.log(%s());', operationId)
 
   return code.join()
 }
