@@ -167,21 +167,22 @@ HTTPSnippet.prototype.prepare = function (request) {
   // reset uriObj values for a clean url
   request.uriObj.query = null
   request.uriObj.search = null
-  request.uriObj.path = request.uriObj.pathname
+  request.uriObj.path = decodeURIComponent(request.uriObj.pathname)
 
   // keep the base url clean of queryString
-  request.url = url.format(request.uriObj)
+  request.url = decodeURIComponent(url.format(request.uriObj))
 
   // update the uri object
+  request.uriObj.href = decodeURIComponent(url.format(request.uriObj))
   request.uriObj.query = request.queryObj
   request.uriObj.search = qs.stringify(request.queryObj)
 
   if (request.uriObj.search) {
-    request.uriObj.path = request.uriObj.pathname + '?' + request.uriObj.search
+    request.uriObj.path = decodeURIComponent(request.uriObj.pathname) + '?' + request.uriObj.search
   }
 
   // construct a full url
-  request.fullUrl = url.format(request.uriObj)
+  request.fullUrl = decodeURIComponent(url.format(request.uriObj))
 
   return request
 }

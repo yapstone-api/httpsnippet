@@ -10,5 +10,6 @@ module.exports = {
 
   curl: require('./curl'),
   httpie: require('./httpie'),
-  wget: require('./wget')
+  wget: require('./wget'),
+  yapstonecurl: require('./yapstonecurl')
 }
