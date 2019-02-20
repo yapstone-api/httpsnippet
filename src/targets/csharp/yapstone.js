@@ -11,9 +11,9 @@ module.exports = function (source, options) {
       .push("using Yapstone.Api;")
       .push("using Yapstone.Client;")
       .push("using Yapstone.Model;")
-      .blank()
-      .push('Configuration.Default.ApiKey.Add("Authorization", "%s");', "YOUR_API_KEY")
-      .push('Configuration.Default.ApiKeyPrefix.Add("Authorization", "Bearer");')
+      // .blank()
+      // .push('Configuration.Default.ApiKey.Add("Authorization", "%s");', "YOUR_API_KEY")
+      // .push('Configuration.Default.ApiKeyPrefix.Add("Authorization", "Bearer");')
       .blank()
 
   var lastSwaggerUri = source['_swaggerSettings']
