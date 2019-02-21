@@ -67,7 +67,8 @@ module.exports = function (source, options) {
   if(source.postData.mimeType === 'application/json') {
     paramNames = paramNames.concat(swaggerMethod.parameters.map(function(param) {
       if(param.in === 'body') {
-        code.push(1, 'const %s = %s;', param.name, util.inspect(source.postData.jsonObj, {
+        var bodyExample = param.schema && param.schema.example || source.postData.jsonObj;
+        code.push(1, 'const %s = %s;', param.name, util.inspect(bodyExample, {
           depth: null
         }))
         return param.name
