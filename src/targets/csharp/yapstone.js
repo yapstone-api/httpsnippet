@@ -46,21 +46,6 @@ module.exports = function(source, options) {
   }
 
   // Deal with body params
-  // if (source.postData.mimeType === "application/json") {
-  //   paramNames = paramNames.concat(
-  //     swaggerMethod.parameters.map(function(param) {
-  //       if (param.in === "body") {
-  //         code.push(
-  //           "var %s = new %s();",
-  //           param.name,
-  //           camelcase(param.name, { pascalCase: true })
-  //         );
-  //         return param.name;
-  //       }
-  //     })
-  //   );
-  // }
-
   if (source.postData.mimeType === "application/json") {
     if (source.postData.jsonObj) {
       code.push(

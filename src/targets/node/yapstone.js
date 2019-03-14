@@ -111,7 +111,7 @@ module.exports = function(source, options) {
 
 module.exports.info = {
   key: "yapstone",
-  title: "HTTP",
+  title: "Yapstone",
   link: "http://nodejs.org/api/http.html#http_http_request_options_callback",
   description: "Yapstone JS interface for Node.js"
 };
