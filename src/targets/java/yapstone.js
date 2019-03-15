@@ -38,9 +38,9 @@ module.exports = function(source, options) {
   code.push("%s api = new %s();", api, api);
 
   // Deal with header parameters
-  if (source["_swaggerSettings"].headerParams.length > 0) {
+  if (source["_swaggerSettings"].requiredHeaderParams.length > 0) {
     paramNames = paramNames.concat(
-      source["_swaggerSettings"].headerParams.map(function(param) {
+      source["_swaggerSettings"].requiredHeaderParams.map(function(param) {
         code.push(
           '%s %s = "%s";',
           capitalize(param.type),
