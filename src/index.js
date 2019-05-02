@@ -42,9 +42,9 @@ var HTTPSnippet = function (data) {
     entry.request.postData.size = 0
 
     validate.request(entry.request, function (err, valid) {
-      if (!valid) {
-        throw err
-      }
+      // if (!valid) {
+      //   throw err
+      // }
 
       self.requests.push(self.prepare(entry.request))
     })
