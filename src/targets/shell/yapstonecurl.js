@@ -62,6 +62,10 @@ module.exports = function(source, options) {
   // construct post params
   switch (source.postData.mimeType) {
     case "multipart/form-data":
+      // Temp fix for not showing in curl
+      if(!source.postData.paramsObj) {
+        break;
+      }
       source.postData.params.map(function(param) {
         var post = util.format("%s=%s", param.name, param.value);
 
@@ -75,6 +79,10 @@ module.exports = function(source, options) {
 
     case "application/x-www-form-urlencoded":
       if (source.postData.params) {
+        // Temp fix for not showing in curl
+        if(!source.postData.paramsObj) {
+          break;
+        }
         source.postData.params.map(function(param) {
           code.push(
             "%s %s",
