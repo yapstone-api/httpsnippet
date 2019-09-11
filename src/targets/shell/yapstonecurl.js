@@ -62,20 +62,28 @@ module.exports = function(source, options) {
   // construct post params
   switch (source.postData.mimeType) {
     case "multipart/form-data":
-      // Temp fix for not showing in curl
-      if(!source.postData.paramsObj) {
+      if(!source["_swaggerSettings"].originalMethod.requestBody.content['multipart/form-data'].schema.properties) {
         break;
       }
-      source.postData.params.map(function(param) {
-        var post = util.format("%s=%s", param.name, param.value);
 
-        if (param.fileName && !param.value) {
-          post = util.format("%s=@%s", param.name, param.fileName);
-        }
-
-        code.push("%s %s", opts.short ? "-F" : "--form", helpers.quote(post));
-      });
+      Object.entries(source["_swaggerSettings"].originalMethod.requestBody.content['multipart/form-data'].schema.properties)
+            .forEach(function(entry) {
+              if(entry[1].example) {
+                var post = util.format("%s=%s", entry[0], entry[1].example);
+                code.push("%s %s", opts.short ? "-F" : "--form", helpers.quote(post));
+              }
+            })
       break;
+      // source.postData.params.map(function(param) {
+      //   var post = util.format("%s=%s", param.name, param.value);
+
+      //   if (param.fileName && !param.value) {
+      //     post = util.format("%s=@%s", param.name, param.fileName);
+      //   }
+
+      //   code.push("%s %s", opts.short ? "-F" : "--form", helpers.quote(post));
+      // });
+      // break;
 
     case "application/x-www-form-urlencoded":
       if (source.postData.params) {
